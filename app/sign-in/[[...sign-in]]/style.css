@@ -1,0 +1,52 @@
+strong {
+  color: #007bff;
+  font-weight: bold;
+}
+
+/* Chatbot toggle button */
+.toggle-small-chatbot {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-small-chatbot:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Gradient line effect */
+.container-with-lines {
+  position: relative;
+  padding: 20px;
+  background-color: #000000; 
+}
+
+.container-with-lines::before,
+.container-with-lines::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.574), transparent);
+}
+
+.container-with-lines::before {
+  top: 0;
+}
+
+.container-with-lines::after {
+  bottom: 0;
+}

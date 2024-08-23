@@ -1,0 +1,33 @@
+step-by-step explanation of the workflow for embedding a PDF into Pinecone:
+
+Step 1: Initialize Pinecone Client
+File: app/lib/pinecone-client.ts
+Function: getPinecone
+This function checks if a Pinecone client instance (pineconeInstance) already exists.
+If not, it calls initPinecone to initialize a new Pinecone client.
+The initPinecone function:
+Creates a new Pinecone client using the API key from the environment variables.
+Checks if the specified index exists.
+If the index does not exist, it calls createIndex to create it.
+Returns the initialized Pinecone client.
+
+Step 2: Chunk the PDF Document
+File: app/lib/pdf-loader.ts
+Function: getChunkedDocsFromPDF
+This function loads the PDF document specified in the environment variable PDF_PATH.
+It uses a text splitter to divide the document into smaller chunks.
+Returns the chunked documents.
+
+Step 3: Embed and Store the Chunks in Pinecone
+File: app/lib/vector-store.ts
+Function: embedAndStoreDocs
+This function takes the Pinecone client and the chunked documents as input.
+It creates embeddings for the chunked documents using the OpenAI embeddings model.
+Stores these embeddings in the Pinecone index.
+
+Step 4: Execute the Workflow
+File: app/scripts/pinecone-embed-docs.ts
+This script orchestrates the entire workflow.
+It calls getPinecone to initialize the Pinecone client.
+Calls getChunkedDocsFromPDF to chunk the PDF document.
+Calls embedAndStoreDocs to embed and store the chunks in Pinecone.
