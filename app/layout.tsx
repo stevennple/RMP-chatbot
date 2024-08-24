@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from "@vercel/analytics/react"
+import { ThemeProvider } from './components/frontend/ThemeProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,9 +21,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <ClerkProvider publishableKey='pk_test_bW9kZXN0LXBob2VuaXgtNzUuY2xlcmsuYWNjb3VudHMuZGV2JA'>
       <html lang="en" className={inter.className}>
-        <body className="bg-white flex flex-col gap-4">
+        <body className="flex flex-col gap-4">
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
           {children}
           <Analytics />  
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

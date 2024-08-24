@@ -11,7 +11,7 @@ export function TopNav() {
   const router = useRouter();
 
   return (
-    <nav className="flex w-full items-center justify-between border-b p-4 text-xl font-semibold bg-white h-16 fixed top-0 left-0 right-0">
+    <nav className="flex w-full items-center justify-between border-b p-4 text-xl font-semibold h-16 fixed top-0 left-0 right-0">
       <Image src={Icon} alt="Site Logo" width={150} height={150} />
       <SignedIn>
         <div className="flex space-x-4">
