@@ -19,8 +19,8 @@ function CreateFlashcardPage() {
   }, [searchParams]);
 
   return (
-    <div className="h-full p-6 overflow-y-auto flex-grow flex flex-col gap-4 items-center justify-center bg-slate-50">
-      <div className="w-11/12 max-w-2xl p-8 bg-white rounded-lg shadow-lg">
+    <div className="h-full p-6 overflow-y-auto flex-grow flex flex-col gap-4 items-center justify-center">
+      <div className="w-11/12 max-w-2xl p-8 rounded-lg shadow-lg">
         <Stepper activeStep={activeStep} setActiveStep={setActiveStep} />
 
         {activeStep === 0 && <CreateStep userId={userId} setDeckName={setDeckName} setActiveStep={setActiveStep} />} 

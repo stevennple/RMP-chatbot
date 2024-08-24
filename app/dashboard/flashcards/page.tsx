@@ -61,7 +61,7 @@ function DecksPage() {
       {/* Header Section */}
       <div className="p-8 text-left">
         <h1 className="text-2xl font-semibold">Hi, {user!.firstName}</h1>
-        <p className="text-gray-500">You&apos;ve got this!</p>
+        <p className="text-muted-foreground">You&apos;ve got this!</p>
       </div>
 
       <div className="p-8">

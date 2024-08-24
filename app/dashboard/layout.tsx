@@ -99,7 +99,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <TopNav />
       <Toaster />
       <div className="flex flex-1 overflow-hidden pt-16">
-        <nav className="w-1/7 h-[calc(100vh-4rem)] bg-white border border-slate-200 text-slate-900 fixed left-0 top-16 pt-4 ">
+        <nav className="w-1/7 h-[calc(100vh-4rem)]  border  fixed left-0 top-16 pt-4 ">
           <ul className="flex flex-col space-y-4 p-4 ml-5">
             {/* Route to default /dashboard page for decks */}
             {/* <li className="hover:bg-gray-200 p-2 rounded flex items-center">
