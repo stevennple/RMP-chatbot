@@ -24,14 +24,15 @@ export default function Home() {
   }
 
   return (
-    <Elements stripe={stripePromise}>
-      <div className="relative flex min-h-screen items-center justify-center gap-12">
-        <div className="absolute top-4 left-4">
-          <Image src={Icon} alt="Site Logo" width={150} height={150} />
+    <>
+      <Elements stripe={stripePromise}>
+        <div className="relative flex min-h-screen items-center justify-center gap-12">
+          <div className="absolute top-4 left-4">
+            <Image src={Icon} alt="Site Logo" width={150} height={150} />
+          </div>
+          <div></div>
         </div>
-        <div>
-        </div>
-      </div>
-    </Elements>
+      </Elements>
+    </>
   );
 }
