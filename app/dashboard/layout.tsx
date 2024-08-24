@@ -102,7 +102,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <nav className="w-1/7 h-[calc(100vh-4rem)] bg-white border border-slate-200 text-slate-900 fixed left-0 top-16 pt-4 ">
           <ul className="flex flex-col space-y-4 p-4 ml-5">
             {/* Route to default /dashboard page for decks */}
-            <li className="hover:bg-gray-200 p-2 rounded flex items-center">
+            {/* <li className="hover:bg-gray-200 p-2 rounded flex items-center">
               <button
                 onClick={handledefaultDashboardClick}
                 className="flex items-center w-full"
@@ -121,10 +121,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 </svg>
                 Flashcards
               </button>
-            </li>
+            </li> */}
 
             {/* On click handler to navigate to new chat page */}
-            <li className="hover:bg-gray-200 p-2 rounded flex items-center">
+            {/* <li className="hover:bg-gray-200 p-2 rounded flex items-center">
               <button
                 onClick={handleCreateFlashcardClick}
                 className="flex items-center w-full"
@@ -145,7 +145,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 </svg>
                 Create Flashcard
               </button>
-            </li>
+            </li> */}
             {/*  */}
             <li className="hover:bg-gray-200 p-2 rounded flex items-center">
                 <button

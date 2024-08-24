@@ -15,7 +15,9 @@ import { useChat } from "ai/react";
 import { ChatBubble } from "./chat-bubble";
 import { Message } from "ai/react";
 import PDFUploader from "./PDFUploader";
+import { v4 as uuidv4 } from 'uuid';
 
+// Chat component: handles the UI for chat, displaying messages, and the input form
 interface ChatProps {
   conversationId: string | null;
   chatInput: string;
@@ -28,12 +30,14 @@ interface ChatProps {
 
 type Role = "user" | "assistant";
 
+// Interface for old message format, to be displayed when fetching conversation history
 interface oldMessage {
   role: Role;
   content: string;
   createdAt: Date; // Added timestamp property
 }
 
+// Main Chat component
 const Chat: React.FC<ChatProps> = ({
   conversationId,
   chatInput,
@@ -43,13 +47,14 @@ const Chat: React.FC<ChatProps> = ({
   messages,
   isMicOn,
 }) => {
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null); // Reference to the chat container for auto-scrolling
   const [summary, setSummary] = useState<string>("");
-  const apiCallMade = useRef(false);
-  const [conversationData, setConversationData] = useState<any>(null);
+  const apiCallMade = useRef(false); // Prevent multiple API calls
+  const [conversationData, setConversationData] = useState<any>(null); // State for conversation history
   const [isLoading, setIsLoading] = useState(true);
   const { userId } = useAuth();
 
+  // Scroll to the bottom of the chat container whenever messages change
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -57,6 +62,7 @@ const Chat: React.FC<ChatProps> = ({
     }
   }, [messages]);
 
+  // Fetch summary if no API call has been made and no conversation data is available
   useEffect(() => {
     const fetchSummary = async () => {
       if (
@@ -89,6 +95,7 @@ const Chat: React.FC<ChatProps> = ({
     fetchSummary();
   }, [conversationData]);
 
+  // Fetch conversation history for the given conversationId and userId
   useEffect(() => {
     const fetchConversation = async () => {
       if (conversationId && userId) {
@@ -203,11 +210,17 @@ const Chat: React.FC<ChatProps> = ({
 interface ChatContainerProps {
   conversationId: string | null;
 }
-
+// Main ChatContainer component: manages conversation state, messages, and user interactions
 export default function ChatContainer({ conversationId }: ChatContainerProps) {
   const { getToken, userId } = useAuth();
   const [isMicOn, setIsMicOn] = useState(false);
 
+  /**
+   * MAIN hook for chat functionality, handles message submission, responses, and state .
+   * 
+   * fetch response from api/chat which essentially uses the entire messages array containing the user's input and responses for context. As well as retrieving relevant context from the Pinecone vector store. Then stream chunks of data back and forth between the client and the server. 
+   * 
+  */
   const {
     messages,
     input: chatInput,
@@ -224,6 +237,7 @@ export default function ChatContainer({ conversationId }: ChatContainerProps) {
     onFinish: async (message) => {
       console.log("Finished message:", message);
 
+      // Update conversation history to DB with AI response
       try {
         const response = await fetch("/api/updateMessage", {
           method: "POST",
@@ -233,7 +247,7 @@ export default function ChatContainer({ conversationId }: ChatContainerProps) {
           body: JSON.stringify({
             userId,
             conversationId,
-            newMessages: message,
+            newMessages: message, // Only the AI's response is saved in the message history
           }),
         });
 
@@ -254,15 +268,30 @@ export default function ChatContainer({ conversationId }: ChatContainerProps) {
 
   useEffect(() => {
     // Whenever conversationId changes, clear the message history
+    // Note: dashboard main layout is responsible for generating a new conversationId
     if (conversationId) {
-      setMessages([]); // Clear messages
+      setMessages([]); // Clear the current messages
     }
   }, [conversationId, setMessages]);
 
+  // Handle user message submission and detect for RateMyProfessors link, scrape professor details, and generate a summary
   const handleMessageSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (chatInput.trim() === "" || !userId) return;
+
+    const userMessage: Message = {
+      id: uuidv4(),
+      role: "user",
+      content: chatInput,
+      createdAt: new Date(),
+    };
+
+    // Add the user's message to the messages list
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+    // Clear the input box after message submission
+    handleInputChange({ target: { value: "" } } as ChangeEvent<HTMLInputElement>);
 
     try {
       // Store user's message in the database
@@ -282,11 +311,84 @@ export default function ChatContainer({ conversationId }: ChatContainerProps) {
         throw new Error("Failed to save user message");
       }
 
-      // Proceed with the AI handling and getting the response
-      handleSubmit();
     } catch (error) {
       console.error("Error during message submission:", error);
     }
+
+    // Regex to match the base RateMyProfessors URL pattern but capture the entire link including the ID
+    const ratemyprofessorsRegex = /https:\/\/www\.ratemyprofessors\.com\/professor\/\S+/;
+    const match = chatInput.match(ratemyprofessorsRegex);
+    
+    if (match && match[0]) {
+      const professorLink = match[0]; // This includes the entire link, including the ID
+      try {
+        
+        console.log("Scraping professor details from:", professorLink);
+
+        const response = await fetch("/api/scrape-professor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({professorLink}),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to scrape professor details");
+        }
+
+        const professorData = await response.json();
+        console.log("Professor details scraped successfully:", professorData);
+
+        // Call the new backend API to generate a summary
+        const summaryResponse = await fetch("/api/professor-summary", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(professorData),
+        });
+
+        if (!summaryResponse.ok) {
+          throw new Error("Failed to generate professor summary");
+        }
+
+        const summaryData = await summaryResponse.json();
+        console.log("Generated professor summary:", summaryData);
+
+        // Update the messages with the professor summary
+        const newMessage: Message = {
+          id: uuidv4(), // Generating a unique ID for the message
+          role: "assistant",
+          content: summaryData.summary,
+          createdAt: new Date(),
+        };
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+        // Store the assistant's message in the conversation history
+        const updateResponse = await fetch("/api/updateMessage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            conversationId,
+            newMessages: newMessage, // Save the AI's response in the message history
+          }),
+        });
+
+        if (!updateResponse.ok) {
+          throw new Error("Failed to update conversation");
+        }
+
+      } catch (error) {
+        console.error("Error generating professor details:", error);
+      }
+    } else { // Otherwise, Proceed with the useChat for responses.
+      handleSubmit();
+    }
+
   };
 
   const handleMicClick = () => {
