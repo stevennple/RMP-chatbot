@@ -70,7 +70,7 @@ export default function CreateStep({ userId, setDeckName, setActiveStep  }: Crea
   };
 
   return (
-    <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
+    <div className="p-8 rounded-xl shadow-lg w-full max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">New Flashcard Deck</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

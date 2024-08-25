@@ -1,4 +1,5 @@
 'use client'
+import { Button } from '@/app/components/ui/button';
 import { useState, useEffect } from 'react';
 
 /* const flashcards = [
@@ -105,12 +106,13 @@ const FlashcardPage = () => {
         <div className="flex justify-center items-center h-screen">
             <div className="relative flex items-center justify-center w-full max-w-md mx-auto">
                 {/* Previous Button */}
-                <button
+                <Button
+                    variant={'outline'}
                     onClick={handlePrev}
-                    className="absolute left-[-3rem] text-3xl bg-gray-200 hover:bg-gray-300 rounded-full p-2 shadow-lg"
+                    className="absolute bg-gray-200  left-[-3rem] text-3xl  hover:bg-gray-300 rounded-full p-2 shadow-lg"
                     >
                     &lt;
-                </button>
+                </Button>
 
                 {/* Flashcard */}
                 <div
