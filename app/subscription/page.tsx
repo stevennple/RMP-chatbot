@@ -1,4 +1,4 @@
-'use client';  // Add this line at the very top
+'use client';  
 
 import React, { useState, useEffect } from 'react';
 import PaymentForm from '@/app/components/PaymentForm';

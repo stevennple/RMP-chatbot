@@ -1,4 +1,5 @@
 'use client';
+
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/app/components/ui/use-toast';
@@ -72,7 +73,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ plan, clientSecret }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: 'https://your-website.com/dashboard',  // Make sure this URL is correct
+        return_url: 'http://localhost:3000/dashboard',
       },
     });
 
