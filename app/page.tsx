@@ -1,38 +1,25 @@
-'use client';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@clerk/nextjs';
-import Image from 'next/image';
-import Icon from '@/data/icon.png';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+import { Logos } from '@/app/components/frontend/Logos';
+import { Hero } from '@/app/components/frontend/Hero';
+import { Features } from '@/app/components/frontend/Features';
+import { HowItWorks } from '@/app/components/frontend/Works';
+import { FAQ } from '@/app/components/frontend/FAQ';
+import { Footer } from '@/app/components/frontend/Footer';
+import { PricingTable } from '@/app/components/frontend/Pricing';
 
-export default function Home() {
-  const router = useRouter();
-  const { isSignedIn } = useAuth();
 
-  useEffect(() => {
-    if (!isSignedIn) {
-      router.push('/sign-in');
-    }
-  }, [isSignedIn, router]);
-
-  if (!isSignedIn) {
-    return null; // or a loading spinner
-  }
-
+export default function LandingRoute() {
   return (
     <>
-      <Elements stripe={stripePromise}>
-        <div className="relative flex min-h-screen items-center justify-center gap-12">
-          <div className="absolute top-4 left-4">
-            <Image src={Icon} alt="Site Logo" width={150} height={150} />
-          </div>
-          <div></div>
-        </div>
-      </Elements>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <Hero />
+        <Logos />
+        <Features />
+        <HowItWorks />
+        <FAQ />
+        <PricingTable />
+        <Footer />
+      </div>
     </>
   );
 }

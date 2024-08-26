@@ -1,3 +1,4 @@
+'use client'
 import { Button } from '@/app/components/ui/button';
 import {
   Card,
@@ -9,6 +10,10 @@ import {
 } from '@/app/components/ui/card';
 import { Check } from 'lucide-react';
 import Link from 'next/link';
+import { loadStripe } from '@stripe/stripe-js';
+import { useAuth } from '@clerk/nextjs';
+import { string } from 'zod';
+
 
 interface iAppProps {
   id: number;
@@ -47,7 +52,45 @@ export const PricingPlans: iAppProps[] = [
   },
 ];
 
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+
+export async function handleCheckout(plan: string, userId: string) {
+  const stripe = await stripePromise;
+
+  if (!stripe) {
+    console.error('Stripe.js failed to load.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/createPayment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, userId }),
+    });
+
+    const session = await response.json();
+
+    // Redirect to Stripe Checkout
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: session.sessionId,
+    });
+
+    if (error) {
+      console.error('Stripe Checkout error:', error);
+    }
+
+    // At this point, the user is redirected to Stripe for payment
+    // After payment, the user will be redirected back to dashboard
+    // handle the success via a query parameter on the success URL
+  } catch (error) {
+    console.error('Error in handleCheckout:', error);
+  }
+}
+
 export function PricingTable() {
+  const { userId } = useAuth();
+
   return (
     <>
       <div className="max-w-3xl mx-auto text-center">
@@ -59,7 +102,7 @@ export function PricingTable() {
           Choose the plan that suits your AI chatbot needs. Get started for free!
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-8 mt-15 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 mt-15 lg:grid-cols-2 px-4 md:px-20 mt-10">
         {PricingPlans.map((plan) => (
           <Card key={plan.id} className={plan.id === 1 ? 'border-primary-purple' : ''}>
             <CardHeader>
@@ -90,15 +133,11 @@ export function PricingTable() {
             </CardContent>
             <CardFooter>
               {plan.id === 1 ? (
-                <form action="" className="w-full">
-                  <Button className="mt-5 w-full" asChild>
-                    <Link href="#" className="Add Stripe redirect here">
-                      Buy Plan
-                    </Link>
+                  <Button className="mt-5 w-full" onClick={() => handleCheckout('pro', userId!)}>
+                    Buy Plan
                   </Button>
-                </form>
               ) : (
-                <Button className="mt-5 w-full" variant="outline" asChild>
+                <Button className="mt-5 w-full" variant="outline" >
                   <Link href={`/dashboard`}>Try for Free</Link>
                 </Button>
               )}

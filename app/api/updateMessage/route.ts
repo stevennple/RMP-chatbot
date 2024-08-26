@@ -33,22 +33,3 @@ export async function POST(request: Request) {
       await client.close();
   }
 }
-
-/* export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-
-    try {
-        await client.connect();
-        const database = client.db('chatbotDB');
-        const collection = database.collection('conversations');
-
-        const conversations = await collection.find({ userId }).toArray();
-        return NextResponse.json(conversations, { status: 200 });
-    } catch (error) {
-        console.error('Error retrieving conversations:', error);
-        return NextResponse.json({ error: 'Error retrieving conversations' }, { status: 500 });
-    } finally {
-        await client.close();
-    }
-} */
