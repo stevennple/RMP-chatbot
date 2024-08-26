@@ -5,6 +5,7 @@ import { useToast } from '@/app/components/ui/use-toast';
 import { Button } from './ui/button';
 
 type Plan = 'free' | 'premium' | 'team';
+
 interface PaymentFormProps {
   plan: Plan;
   clientSecret?: string;
@@ -16,9 +17,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ plan, clientSecret }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  console.log("Client secret received:", clientSecret);
-
-  // Ensure that we wait until clientSecret is available before rendering the PaymentElement
   useEffect(() => {
     if (!clientSecret) {
       toast({
@@ -74,7 +72,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ plan, clientSecret }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: 'https://chatbot-three-smoky.vercel.app/dashboard',
+        return_url: 'https://your-website.com/dashboard',  // Make sure this URL is correct
       },
     });
 

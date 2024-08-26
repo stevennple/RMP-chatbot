@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20', // Make sure to use the correct Stripe API version
+  apiVersion: '2024-06-20', // Ensure this is the correct API version you're using
 });
 
 export async function POST(req: NextRequest) {
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     };
 
     // Validate the plan and ensure it exists
-    if (!prices[plan]) {
+    if (prices[plan] === undefined) {  // Check if the plan exists
       return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 });
     }
 
@@ -32,9 +32,7 @@ export async function POST(req: NextRequest) {
     console.log("PaymentIntent created:", paymentIntent);
     return NextResponse.json({ client_secret: paymentIntent.client_secret });
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-    return NextResponse.json({ error: 'Unknown error occurred' }, { status: 500 });
+    console.error("Error creating PaymentIntent:", error);
+    return NextResponse.json({ error: 'Payment failed. Please try again.' }, { status: 500 });
   }
 }
