@@ -16,6 +16,7 @@ import { ChatBubble } from "./chat-bubble";
 import { Message } from "ai/react";
 import PDFUploader from "./PDFUploader";
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from "@/app/components/ui/use-toast";
 
 // Chat component: handles the UI for chat, displaying messages, and the input form
 interface ChatProps {
@@ -278,23 +279,38 @@ export default function ChatContainer({ conversationId }: ChatContainerProps) {
   const handleMessageSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (chatInput.trim() === "" || !userId) return;
-
-    const userMessage: Message = {
-      id: uuidv4(),
-      role: "user",
-      content: chatInput,
-      createdAt: new Date(),
-    };
-
-    // Add the user's message to the messages list
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-
-    // Clear the input box after message submission
-    handleInputChange({ target: { value: "" } } as ChangeEvent<HTMLInputElement>);
-
     try {
-      // Store user's message in the database
+      
+      // First, call the update-character-count API to check if the character limit is exceeded
+      const characterCountResponse = await fetch("/api/update-character-count", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          newMessageContent: chatInput,
+        }),
+      });
+
+      if (!characterCountResponse.ok) {
+        throw new Error("Failed to update character count");
+      }
+
+      const characterCountData = await characterCountResponse.json();
+
+      // If the character limit is exceeded, handle accordingly
+      if (characterCountData.exceeded) {
+        console.log("Character limit exceeded:", characterCountData.totalCharactersUsed);
+        toast({
+          title: "Exceed character limit!",
+          description: "Please upgrade your plan to continue.",
+          variant: "default",
+        });
+        return;
+      }
+
+      // Proceed with saving the user's message
       const response = await fetch("/api/updateMessage", {
         method: "POST",
         headers: {
@@ -315,14 +331,31 @@ export default function ChatContainer({ conversationId }: ChatContainerProps) {
       console.error("Error during message submission:", error);
     }
 
-    // Regex to match the base RateMyProfessors URL pattern but capture the entire link including the ID
+    // Check if the chatInput contain a RateMyProfessor link
     const ratemyprofessorsRegex = /https:\/\/www\.ratemyprofessors\.com\/professor\/\S+/;
     const match = chatInput.match(ratemyprofessorsRegex);
     
+    // If it does, we will not use the useChat for responses, instead generate our own
     if (match && match[0]) {
       const professorLink = match[0]; // This includes the entire link, including the ID
       try {
         
+        // First, save the user's message to the conversation history (messages)
+        if (chatInput.trim() === "" || !userId) return;
+
+        const userMessage: Message = {
+          id: uuidv4(),
+          role: "user",
+          content: chatInput,
+          createdAt: new Date(),
+        };
+    
+        // Add the user's message to the messages list
+        setMessages((prevMessages) => [...prevMessages, userMessage]);
+    
+        // Clear the input box after message submission
+        handleInputChange({ target: { value: "" } } as ChangeEvent<HTMLInputElement>);
+
         console.log("Scraping professor details from:", professorLink);
 
         const response = await fetch("/api/scrape-professor", {

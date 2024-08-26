@@ -1,10 +1,18 @@
+'use client'
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/app/components/ui/button';
 import HeroImage from '@/public/Architecture.png';
 import { ThemeToggle } from './ThemeToggle';
+import { useRouter } from 'next/navigation';
 
 export function Hero() {
+
+  const router = useRouter();
+  const handleSignIn = () => {
+    router.push('/sign-in');
+  };
+
   return (
     <>
       <div className="relative flex flex-col w-full py-5 mx-auto md:flex-row md:items-center md:justify-between">
@@ -19,8 +27,8 @@ export function Hero() {
 
         <nav className="hidden md:flex md:justify-end md:space-x-4">
           <ThemeToggle />
-          <Button variant="secondary">Sign in</Button>
-          <Button>Sign up</Button>
+          <Button variant="secondary" onClick={handleSignIn}>Sign in</Button>
+          {/* <Button>Sign up</Button> */}
         </nav>
       </div>
 

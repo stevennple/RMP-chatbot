@@ -16,7 +16,7 @@ const client = new MongoClient(uri, {
 
 let isConnected = false;
 
-export async function connectToFlashcardDB() {
+export async function connectToChatDB() {
   if (!isConnected) {
     try {
       await client.connect();
