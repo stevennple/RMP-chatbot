@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/app/components/ui/button';
-import HeroImage from '@/public/Architecture.png';
+import HeroImage from '@/public/demo.png';
 import { ThemeToggle } from './ThemeToggle';
 import { useRouter } from 'next/navigation';
 
@@ -50,7 +50,7 @@ export function Hero() {
             </p>
             <div className="flex items-center gap-x-5 w-full justify-center mt-5 ">
               {/* <LoginLink> */}
-              <Button variant="secondary">Sign in</Button>
+              <Button variant="secondary" onClick={handleSignIn}>Sign in</Button>
               {/* </LoginLink> */}
               {/* <RegisterLink> */}
               <Button className="bg-primary">Try for free</Button>
