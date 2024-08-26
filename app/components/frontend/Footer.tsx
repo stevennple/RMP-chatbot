@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/data/conversai.png";
+import Logo from "@/data/ConversAI.png";
 import { FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 export function Footer() {
