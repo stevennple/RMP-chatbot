@@ -74,7 +74,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ plan, clientSecret }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: 'https://chatbot-three-smoky.vercel.app/dashboard',
+        return_url: 'https://ratemyprofessor-chatbot.vercel.app/dashboard',
       },
     });
 
