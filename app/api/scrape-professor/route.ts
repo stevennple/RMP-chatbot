@@ -1,5 +1,5 @@
+import puppeteer from 'puppeteer-core';
 import { NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
 
 interface RatingData {
   comment_number: number;
@@ -15,7 +15,11 @@ interface ProfessorData {
 }
 
 async function scrapeProfessorData(professorLink: string): Promise<ProfessorData> {
-  const browser = await puppeteer.launch({ headless: true });
+  // Connect to the remote browser using puppeteer-core
+  const browser = await puppeteer.connect({
+    browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BLESS_TOKEN}`,
+  });
+  
   const page = await browser.newPage();
 
   try {
